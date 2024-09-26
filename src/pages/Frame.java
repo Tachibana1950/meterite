@@ -16,7 +16,7 @@ public class Frame extends JFrame {
 
   // Screen
   private int width = 500;
-  private int height = 700;
+  private int height = 500;
 
   // Thread
   MyThread threads;

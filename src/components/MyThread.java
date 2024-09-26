@@ -1,21 +1,30 @@
 package components;
 
 import java.awt.Frame;
+// import java.awt.Rectangle;
+
+import javax.swing.JPanel;
+
+import pages.GamePanel;
 
 public class MyThread extends Thread {
 
   // Atribute
   private Photos pt;
   private Frame frame;
+  private GamePanel gamePanel;
+  // private Photos[] photo;
+
+  // Movement Flag
+  private boolean isKnocking = false;
 
   // Control Path
   int dx = 1, dy = 1;
 
-  public MyThread(
-      Frame getFrame,
-      Photos getPt) {
+  public MyThread(Frame getFrame, Photos getPt, GamePanel getGamePanel) {
     this.pt = getPt;
     this.frame = getFrame;
+    this.gamePanel = getGamePanel;
 
   }
 
@@ -32,25 +41,54 @@ public class MyThread extends Thread {
     while (true) {
 
       try {
-        x = x + dx;
-        y = y + dy;
+        if (!isKnocking) {
+          x = x + dx;
+          y = y + dy;
 
-        System.out.println("X: " + x);
-        System.out.println("Y: " + y);
+        } else {
+          x = x - dx;
+          y = y - dy;
+
+        }
+
+        for (Photos getRef : this.gamePanel.getphoto()) {
+          if ((this.pt != getRef) && getRef.getBounds().intersects(this.pt.getBounds())) {
+            System.out.println("Hi");
+            dx = -dx;
+            dy = -dy;
+
+            this.isKnocking = !this.isKnocking;
+
+            break;
+
+          } else {
+            System.out.println();
+
+          }
+
+        }
+
+        // System.out.println("walk");
+        // if (this.pt.getBounds().intersects(this.photo[1].getBounds())) {
+        // System.out.println("Boom");
+        // break;
+        // }
+
+        // System.out.println("X: " + x);
+        // System.out.println("Y: " + y);
         // System.out.println("Border X: " + borderX);
-        System.out.println("===============");
+        // System.out.println("===============");
 
         if (x + (int) (this.pt.getImageSize("height") / 2) - 7 > borderX || x < 0) {
-          System.out.println("Out Of Frame X: " + x);
+          // System.out.println("Out Of Frame X: " + x);
           // x = x + -dx;
           dx = -dx;
           // System.exit(-1);
 
-
         }
 
         if (y + this.pt.getImageSize("height") > borderY + (int) (this.pt.getImageSize("height") / 2) - 7 || y < 0) {
-          System.out.println("Out Of Frame Y: " + y);
+          // System.out.println("Out Of Frame Y: " + y);
           // y = -dy;
           dy = -dy;
           // System.exit(-1);
@@ -59,12 +97,8 @@ public class MyThread extends Thread {
 
         this.pt.setBounds(x, y, this.pt.getWidth(), this.pt.getHeight());
         this.pt.repaint();
-        // this.frame.repaint();
 
-        // System.out.println(x);
-        // System.out.println(y);
-
-        Thread.sleep(10);
+        Thread.sleep(5);
       } catch (Exception e) {
         // TODO: handle exception
       }

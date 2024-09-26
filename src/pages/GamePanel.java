@@ -15,12 +15,14 @@ public class GamePanel extends JPanel {
   private int parentHeight;
   private Frame getframe;
   private MyThread threads;
+  private Photos[] photo; 
 
   public GamePanel(Frame frame, int num, int width, int height) {
     this.getNum = num;
     this.parentWidth = width;
     this.parentHeight = height;
     this.getframe = frame;
+    this.photo = new Photos[getNum];
 
     setLayout(null);
     setOpaque(false);
@@ -35,19 +37,18 @@ public class GamePanel extends JPanel {
     for (int i = 0; i < this.getNum; i++) {
       Photos pt = new Photos();
 
-      int x = (int) (Math.random() * (this.parentWidth - pt.getImageSize("width")));
-      int y = (int) (Math.random() * (this.parentHeight - pt.getImageSize("height")));
-
-      // System.out.println("X Bounds: " + x);
-      // System.out.println("Y Bounds: " + y);
-      // System.out.println();
+      int x = (int) (Math.random() * (this.parentWidth - pt.getImageSize("width")) / 2);
+      int y = (int) (Math.random() * (this.parentHeight - pt.getImageSize("height")) / 2.5);
 
       // Set position
       pt.setBounds(x, y, pt.getImageSize("width"), pt.getImageSize("height"));
 
-      this.threads = new MyThread(this.getframe, pt);
+      photo[i]=pt;
+
+      this.threads = new MyThread(this.getframe, pt, this);
       threads.start();
 
+      System.out.println(photo.length);
       add(pt);
     }
 
@@ -56,4 +57,9 @@ public class GamePanel extends JPanel {
 
     // threads.start();
   }
+
+  public Photos[] getphoto(){
+    return photo;
+  }
+
 }

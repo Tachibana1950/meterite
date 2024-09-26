@@ -15,7 +15,7 @@ public class App {
         // System.out.print("Input Sec : ");
         // float sec = scan.nextFloat();
 
-        Frame frame = new Frame(5, 1);
+        Frame frame = new Frame(3, 1);
         frame.setVisible(true);
 
     }
