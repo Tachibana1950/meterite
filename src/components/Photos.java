@@ -6,6 +6,9 @@ import javax.sound.sampled.AudioSystem;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+
+import java.awt.Rectangle;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -31,6 +34,8 @@ public class Photos extends JPanel implements MouseMotionListener, MouseListener
 
   public Photos() {
     this.setOpaque(false);
+    this.setSize(new Dimension(photoWidth, photoHeight));
+    this.setPreferredSize(new Dimension(photoWidth, photoHeight));
 
     // Meteorite picture
     int numpic = (int) (Math.random() * 10) + 1;
@@ -58,10 +63,16 @@ public class Photos extends JPanel implements MouseMotionListener, MouseListener
   }
 
   @Override
+public Rectangle getBounds() {
+    return new Rectangle(getX(), getY(), photoWidth, photoHeight);
+}
+
+  @Override
   protected void paintComponent(Graphics g) {
     super.paintComponent(g);
 
     g.setColor(Color.red);
+    g.drawRect(0, 0, 50, 50);
 
     if ((num < 2) && !this.isBomb) {
       g.drawImage(this.show, 0, 0, 50, 50, this);
@@ -90,13 +101,11 @@ public class Photos extends JPanel implements MouseMotionListener, MouseListener
 
     if (num >= 2) {
       isBomb = true;
-      repaint();
 
       Timer timer = new Timer(500, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
           setVisible(false);
-          repaint();
         }
       });
 
@@ -115,5 +124,10 @@ public class Photos extends JPanel implements MouseMotionListener, MouseListener
 
   @Override
   public void mouseMoved(MouseEvent e) {
+  }
+
+  public boolean getStatus() {
+    return this.isBomb;
+
   }
 }

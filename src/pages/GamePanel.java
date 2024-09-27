@@ -8,13 +8,17 @@ import javax.swing.JPanel;
 
 import components.MyThread;
 import components.Photos;
+import utils.useRandom;
 
 public class GamePanel extends JPanel {
   private int getNum;
   private int parentWidth;
   private int parentHeight;
   private Frame getframe;
+
+  // Object Photos
   private MyThread threads;
+  private MyThread[] threadContainers;
   private Photos[] photo;
 
   public GamePanel(Frame frame, int num, int width, int height) {
@@ -22,7 +26,10 @@ public class GamePanel extends JPanel {
     this.parentWidth = width;
     this.parentHeight = height;
     this.getframe = frame;
+
+    // Set array size
     this.photo = new Photos[getNum];
+    this.threadContainers = new MyThread[getNum];
 
     setLayout(null);
     setOpaque(false);
@@ -48,10 +55,11 @@ public class GamePanel extends JPanel {
         continue;
       }
 
-      this.threads = new MyThread(this.getframe, pt, this);
+      this.threads = new MyThread(this.getframe, pt, this, (new useRandom().randomSpeed()));
+      this.threadContainers[i] = threads;
+
       threads.start();
 
-      System.out.println(photo.length);
       add(pt);
     }
 
@@ -62,9 +70,9 @@ public class GamePanel extends JPanel {
   }
 
   public Photos[] getphoto() {
-    return photo;
+    return this.photo;
   }
 
-  
+
 
 }

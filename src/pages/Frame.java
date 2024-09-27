@@ -28,6 +28,8 @@ public class Frame extends JFrame {
     setLocationRelativeTo(null);
     setDefaultCloseOperation(EXIT_ON_CLOSE);
 
+    this.getContentPane().setBackground(Color.decode("#222222"));
+
     this.getNum = getNumFormFrame;
     this.getSpeed = getSppedFromFrame;
 
