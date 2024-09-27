@@ -51,22 +51,26 @@ public class MyThread extends Thread {
 
         }
 
-        for (Photos getRef : this.gamePanel.getphoto()) {
-          if ((this.pt != getRef) && getRef.getBounds().intersects(this.pt.getBounds())) {
-            System.out.println("Hi");
-            dx = -dx;
-            dy = -dy;
+        // for (Photos getRef : this.gamePanel.getphoto()) {
+        //   if ((this.pt != getRef) && getRef.getBounds().intersects(this.pt.getBounds())) {
+        //     System.out.println("Hi");
+        //     if (Math.abs(x - getRef.getX()) > Math.abs(y - getRef.getY())) {
+        //       dx = -dx;
+        //       x += dx * 10;
+        //       // System.out.println("Hor");
+        //     } else {
+        //       dy = -dy;
+        //       y += dy * 10;
+        //       // System.out.println("Ver");
+        //     }
 
-            this.isKnocking = !this.isKnocking;
+        //     this.isKnocking = !this.isKnocking;
 
-            break;
+            
 
-          } else {
-            System.out.println();
+        //   } 
 
-          }
-
-        }
+        // }
 
         // System.out.println("walk");
         // if (this.pt.getBounds().intersects(this.photo[1].getBounds())) {
@@ -88,8 +92,6 @@ public class MyThread extends Thread {
         }
 
         if (y + this.pt.getImageSize("height") > borderY + (int) (this.pt.getImageSize("height") / 2) - 7 || y < 0) {
-          // System.out.println("Out Of Frame Y: " + y);
-          // y = -dy;
           dy = -dy;
           // System.exit(-1);
 
@@ -98,7 +100,7 @@ public class MyThread extends Thread {
         this.pt.setBounds(x, y, this.pt.getWidth(), this.pt.getHeight());
         this.pt.repaint();
 
-        Thread.sleep(5);
+        Thread.sleep(10);
       } catch (Exception e) {
         // TODO: handle exception
       }
