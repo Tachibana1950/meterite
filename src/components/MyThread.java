@@ -1,9 +1,6 @@
 package components;
 
 import java.awt.Frame;
-import java.awt.Rectangle;
-
-import javax.swing.JPanel;
 
 import pages.GamePanel;
 import utils.useRandom;
@@ -73,6 +70,11 @@ public class MyThread extends Thread {
       Photos targer = this.gamePanel.getphoto()[i];
       if (targer != null && targer != this.pt) {
         if (targer.getBounds().intersects(this.pt.getBounds())) {
+          this.dx = -dx;
+          this.dy = -dy;
+
+          targer.setDx(-targer.getDx());
+          targer.setDy(-targer.getDy());
 
           try {
             Thread.sleep(200);

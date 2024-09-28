@@ -32,6 +32,10 @@ public class Photos extends JPanel implements MouseMotionListener, MouseListener
   private int num = 0;
   private boolean isBomb = false;
 
+  // Collision
+  private int dx = 1;
+  private int dy = 1;
+
   public Photos() {
     this.setOpaque(false);
     this.setSize(new Dimension(photoWidth, photoHeight));
@@ -54,6 +58,26 @@ public class Photos extends JPanel implements MouseMotionListener, MouseListener
     addMouseMotionListener(this);
   }
 
+  public int getDx() {
+    return this.dx;
+
+  }
+
+  public int getDy() {
+    return this.dy;
+
+  }
+
+  public void setDx(int _dx) {
+    this.dx = _dx;
+
+  }
+
+  public void setDy(int _dy) {
+    this.dy = _dy;
+
+  }
+
   public int getImageSize(String _case) {
     if (_case.equals("width")) {
       return this.photoWidth;
@@ -63,16 +87,15 @@ public class Photos extends JPanel implements MouseMotionListener, MouseListener
   }
 
   @Override
-public Rectangle getBounds() {
+  public Rectangle getBounds() {
     return new Rectangle(getX(), getY(), photoWidth, photoHeight);
-}
+  }
 
   @Override
-  protected void paintComponent(Graphics g) {
+  public void paintComponent(Graphics g) {
     super.paintComponent(g);
 
     g.setColor(Color.red);
-    g.drawRect(0, 0, 50, 50);
 
     if ((num < 2) && !this.isBomb) {
       g.drawImage(this.show, 0, 0, 50, 50, this);
