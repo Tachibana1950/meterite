@@ -8,14 +8,14 @@ public class App {
 
         
         // // จำนวนอุกาบาต
-        // System.out.print("Input Num : ");
-        // int num = scan.nextInt();
+        System.out.print("Input Num : ");
+        int num = scan.nextInt();
 
         // //เวลาความเร็ว
         // System.out.print("Input Sec : ");
         // float sec = scan.nextFloat();
 
-        Frame frame = new Frame(5, 1);
+        Frame frame = new Frame(num, 1);
         frame.setVisible(true);
 
     }
