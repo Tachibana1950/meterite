@@ -16,7 +16,7 @@ public class Frame extends JFrame {
 
   // Screen
   private int width = 500;
-  private int height = 700;
+  private int height = 500;
 
   // Thread
   MyThread threads;
@@ -27,6 +27,8 @@ public class Frame extends JFrame {
     setPreferredSize(new Dimension(this.width, this.height));
     setLocationRelativeTo(null);
     setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+    this.getContentPane().setBackground(Color.decode("#222222"));
 
     this.getNum = getNumFormFrame;
     this.getSpeed = getSppedFromFrame;
