@@ -1,19 +1,22 @@
 package pages;
 
-import java.awt.Color;
 import java.awt.Dimension;
-
-import javax.swing.JLayeredPane;
+import java.awt.Frame;
+import java.awt.Rectangle;
 import javax.swing.JPanel;
 
 import components.MyThread;
 import components.Photos;
 import utils.useRandom;
 
-interface GamePanelProps {
-  public Photos[] getPhotos();
-  public MyThread[] getThreads();
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
 
+interface GamePanelProps {
+  public List<Photos> getPhotos();
+
+  public List<MyThread> getThreads();
 }
 
 public class GamePanel extends JPanel implements GamePanelProps {
@@ -22,10 +25,8 @@ public class GamePanel extends JPanel implements GamePanelProps {
   private int parentHeight;
   private Frame getframe;
 
-  // Object Photos
-  private MyThread threads;
-  private MyThread[] threadContainers;
-  private Photos[] photo;
+  private List<MyThread> threadContainers;
+  private List<Photos> photos;
 
   public GamePanel(Frame frame, int num, int width, int height) {
     this.getNum = num;
@@ -33,20 +34,13 @@ public class GamePanel extends JPanel implements GamePanelProps {
     this.parentHeight = height;
     this.getframe = frame;
 
-    // Set array size
-    this.photo = new Photos[getNum];
-    this.threadContainers = new MyThread[getNum];
+    this.photos = new ArrayList<>();
+    this.threadContainers = new ArrayList<>();
 
     setLayout(null);
     setOpaque(false);
     setSize(new Dimension(width, height));
 
-    // Container
-    // 1. สร้าง pt ตามจำนวนที่ต้องการโดยใช้ Loop
-    // 2. สร้าง Panel เก็บ pt
-    // 3. Add Panel เข้าสุ่ Frame
-
-    // !!!
     for (int i = 0; i < this.getNum; i++) {
       Photos pt = new Photos();
 
@@ -55,34 +49,31 @@ public class GamePanel extends JPanel implements GamePanelProps {
 
       pt.setBounds(x, y, pt.getImageSize("width"), pt.getImageSize("height"));
 
-      photo[i] = pt;
+      photos.add(pt);
 
-      if (photo[i] == null) {
-        continue;
-      }
+      MyThread thread = new MyThread(this.getframe, pt, this, (new useRandom().randomSpeed()));
+      threadContainers.add(thread);
 
-      this.threads = new MyThread(this.getframe, pt, this, (new useRandom().randomSpeed()));
-      this.threadContainers[i] = threads;
-
-      threads.start();
+      thread.start();
 
       add(pt);
     }
 
     this.revalidate();
     this.repaint();
-
-    // threads.start();
   }
 
-  public Photos[] getPhotos() {
-    return this.photo;
+  public List<Photos> getPhotos() {
+    return this.photos;
   }
 
-  public MyThread[] getThreads() {
+  public List<MyThread> getThreads() {
     return this.threadContainers;
   }
 
-
-
+  public void removePhoto(Photos photo) {
+    photos.remove(photo);
+    remove(photo);
+    repaint();
+  }
 }

@@ -147,6 +147,7 @@ public class Photos extends JPanel implements MouseListener, PhotosProps {
       timer.setRepeats(false);
       timer.start();
 
+      remove(this);
       return;
     }
 
