@@ -8,6 +8,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import pages.GamePanel;
+
 import java.awt.Rectangle;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -20,13 +22,19 @@ import java.awt.event.MouseListener;
 
 interface PhotosProps {
   public double getDx();
+
   public double getDy();
+
   public void setDx(double _dx);
+
   public void setDy(double _dy);
+
   public int getImageSize(String _case);
+
   public boolean getStatus();
 
 }
+
 public class Photos extends JPanel implements MouseListener, PhotosProps {
 
   // Image
@@ -43,10 +51,14 @@ public class Photos extends JPanel implements MouseListener, PhotosProps {
   private double dx = 1.1;
   private double dy = 1.1;
 
-  public Photos() {
+  private GamePanel gamePanel;
+
+  public Photos(GamePanel _panel) {
     this.setOpaque(false);
     this.setSize(new Dimension(photoWidth, photoHeight));
     this.setPreferredSize(new Dimension(photoWidth, photoHeight));
+
+    this.gamePanel = _panel;
 
     // Meteorite picture
     int numpic = (int) (Math.random() * 10) + 1;
@@ -62,7 +74,9 @@ public class Photos extends JPanel implements MouseListener, PhotosProps {
 
     // Add event listeners
     if (!isBomb) {
+
       addMouseListener(this);
+      return;
 
     }
   }
@@ -138,16 +152,18 @@ public class Photos extends JPanel implements MouseListener, PhotosProps {
         @Override
         public void actionPerformed(ActionEvent e) {
           new PlaySounds("bomb.wav");
-          
+
           isBomb = true;
           setVisible(false);
+
+          gamePanel.removePhoto(Photos.this);
+          removeMouseListener(Photos.this);
         }
       });
 
       timer.setRepeats(false);
       timer.start();
 
-      remove(this);
       return;
     }
 

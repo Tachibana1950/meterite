@@ -25,6 +25,7 @@ public class GamePanel extends JPanel implements GamePanelProps {
   private int parentHeight;
   private Frame getframe;
 
+  // Container
   private List<MyThread> threadContainers;
   private List<Photos> photos;
 
@@ -42,7 +43,7 @@ public class GamePanel extends JPanel implements GamePanelProps {
     setSize(new Dimension(width, height));
 
     for (int i = 0; i < this.getNum; i++) {
-      Photos pt = new Photos();
+      Photos pt = new Photos(this);
 
       int x = (int) (Math.random() * (this.parentWidth - pt.getImageSize("width")));
       int y = (int) (Math.random() * (this.parentHeight - pt.getImageSize("height")));

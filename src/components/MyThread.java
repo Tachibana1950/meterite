@@ -83,6 +83,8 @@ public class MyThread extends Thread {
         e.printStackTrace();
       }
     }
+
+    this.interrupt();
   }
 
   private void movePhoto() {
@@ -100,7 +102,6 @@ public class MyThread extends Thread {
     boolean outOfBorderX = false;
     boolean outOfBorderY = false;
 
-    // Handle horizontal boundaries
     if (x < 0) {
       dx = Math.abs(dx);
       x = 0;
@@ -111,7 +112,6 @@ public class MyThread extends Thread {
       outOfBorderX = true;
     }
 
-    // Handle vertical boundaries
     if (y < 0) {
       dy = Math.abs(dy);
       y = 0;
@@ -208,8 +208,8 @@ public class MyThread extends Thread {
 
   private void updateSpeed(Photos target) {
     double angle = Math.atan2(this.pt.getY() - target.getY(), this.pt.getX() - target.getX());
-    this.dx = (Math.cos(angle) * initialRandomizeSpeed(getCurrentSpeed));
-    this.dy = (Math.sin(angle) * initialRandomizeSpeed(getCurrentSpeed));
+    this.dx = zeroCorrection((Math.cos(angle) * initialRandomizeSpeed(getCurrentSpeed)));
+    this.dy = zeroCorrection((Math.sin(angle) * initialRandomizeSpeed(getCurrentSpeed)));
 
     System.out.println(
         String.format("----- Update Speed -----\n= dx > %f\n= dy > %f\n------------------------------\n", this.dx,
