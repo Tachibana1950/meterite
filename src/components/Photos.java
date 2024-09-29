@@ -7,6 +7,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import utils.PlaySounds;
+
 import java.awt.Rectangle;
 
 import java.awt.Color;
@@ -18,9 +20,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 
-public class Photos extends JPanel implements MouseMotionListener, MouseListener {
+public class Photos extends JPanel implements MouseListener {
 
   // Image
   private Image show;
@@ -33,8 +34,8 @@ public class Photos extends JPanel implements MouseMotionListener, MouseListener
   private boolean isBomb = false;
 
   // Collision
-  private int dx = 1;
-  private int dy = 1;
+  private double dx = 1;
+  private double dy = 1;
 
   public Photos() {
     this.setOpaque(false);
@@ -54,26 +55,28 @@ public class Photos extends JPanel implements MouseMotionListener, MouseListener
     }
 
     // Add event listeners
-    addMouseListener(this);
-    addMouseMotionListener(this);
+    if (!isBomb) {
+      addMouseListener(this);
+
+    }
   }
 
-  public int getDx() {
+  public double getDx() {
     return this.dx;
 
   }
 
-  public int getDy() {
+  public double getDy() {
     return this.dy;
 
   }
 
-  public void setDx(int _dx) {
+  public void setDx(double _dx) {
     this.dx = _dx;
 
   }
 
-  public void setDy(int _dy) {
+  public void setDy(double _dy) {
     this.dy = _dy;
 
   }
@@ -98,10 +101,10 @@ public class Photos extends JPanel implements MouseMotionListener, MouseListener
     g.setColor(Color.red);
 
     if ((num < 2) && !this.isBomb) {
-      g.drawImage(this.show, 0, 0, 50, 50, this);
+      g.drawImage(this.show, 0, 0, this.photoWidth, this.photoHeight, this);
 
     } else {
-      g.drawImage(bomb.getImage(), 0, 0, 50, 50, this);
+      g.drawImage(bomb.getImage(), 0, 0, this.photoWidth, this.photoHeight, this);
 
     }
   }
@@ -123,30 +126,30 @@ public class Photos extends JPanel implements MouseMotionListener, MouseListener
     num++;
 
     if (num >= 2) {
+      new PlaySounds("pling.wav", -15f);
+
       isBomb = true;
 
       Timer timer = new Timer(500, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
+          new PlaySounds("bomb.wav");
+
           setVisible(false);
         }
       });
 
       timer.setRepeats(false);
       timer.start();
+
+      return;
     }
+
+    new PlaySounds("laser-gun.wav", -20.0f);
   }
 
   @Override
   public void mouseReleased(MouseEvent e) {
-  }
-
-  @Override
-  public void mouseDragged(MouseEvent e) {
-  }
-
-  @Override
-  public void mouseMoved(MouseEvent e) {
   }
 
   public boolean getStatus() {

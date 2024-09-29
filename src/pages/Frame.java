@@ -3,16 +3,13 @@ import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.JFrame;
-import javax.swing.JLayeredPane;
-import javax.swing.JPanel;
 
 import components.MyThread;
-import components.Photos;
 
 public class Frame extends JFrame {
   // ! Attribute
   private int getNum = 1;
-  private float getSpeed = 0f;
+  // private float getSpeed = 0f;
 
   // Screen
   private int width = 500;
@@ -28,10 +25,10 @@ public class Frame extends JFrame {
     setLocationRelativeTo(null);
     setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-    this.getContentPane().setBackground(Color.decode("#222222"));
+    this.getContentPane().setBackground(Color.decode("#111111"));
 
     this.getNum = getNumFormFrame;
-    this.getSpeed = getSppedFromFrame;
+    // this.getSpeed = getSppedFromFrame;
 
     this.add(new GamePanel(this, getNum, this.width, this.height));
 

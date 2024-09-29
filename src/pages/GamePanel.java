@@ -44,8 +44,8 @@ public class GamePanel extends JPanel {
     for (int i = 0; i < this.getNum; i++) {
       Photos pt = new Photos();
 
-      int x = (int) (Math.random() * (this.parentWidth - pt.getImageSize("width")) / 2);
-      int y = (int) (Math.random() * (this.parentHeight - pt.getImageSize("height")) / 2.5);
+      int x = (int) (Math.random() * (this.parentWidth - pt.getImageSize("width")));
+      int y = (int) (Math.random() * (this.parentHeight - pt.getImageSize("height")));
 
       pt.setBounds(x, y, pt.getImageSize("width"), pt.getImageSize("height"));
 
@@ -69,7 +69,7 @@ public class GamePanel extends JPanel {
     // threads.start();
   }
 
-  public Photos[] getphoto() {
+  public Photos[] getPhotos() {
     return this.photo;
   }
 
