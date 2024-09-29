@@ -106,8 +106,10 @@ public class MyThread extends Thread {
           this.dx = Math.cos(angle) * initialRandomizeSpeed(getCurrentSpeed);
           this.dy = Math.sin(angle) * initialRandomizeSpeed(getCurrentSpeed);
 
-          this.dx += (Math.random() - 0.5) * 0.2;
-          this.dy += (Math.random() - 0.5) * 0.2;
+          System.out.println(String.format("Update Speed:\n=> %f\n=> %f\n------------------------------\n", this.dx, this.dy));
+
+          this.dx += (Math.random() * 3) - 0.5;
+          this.dy += (Math.random() * 3) - 0.5;
 
           break;
         }
@@ -133,9 +135,9 @@ public class MyThread extends Thread {
         x += dx;
         y += dy;
 
-        System.out.println(x);
-        System.out.println(borderX + 7);
-        System.out.println("====================\n");
+        // System.out.println(x);
+        // System.out.println(borderX + 7);
+        // System.out.println("====================\n");
 
         // Border Check X
         if (x < 0) {
@@ -144,7 +146,7 @@ public class MyThread extends Thread {
 
         }
 
-        if (x > borderX) {
+        if (x + 75 > borderX + 75) {
           dx = -Math.abs(dx);
           x = borderX; // Right
 
