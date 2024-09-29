@@ -10,7 +10,13 @@ import components.MyThread;
 import components.Photos;
 import utils.useRandom;
 
-public class GamePanel extends JPanel {
+interface GamePanelProps {
+  public Photos[] getPhotos();
+  public MyThread[] getThreads();
+
+}
+
+public class GamePanel extends JPanel implements GamePanelProps {
   private int getNum;
   private int parentWidth;
   private int parentHeight;
@@ -71,6 +77,10 @@ public class GamePanel extends JPanel {
 
   public Photos[] getPhotos() {
     return this.photo;
+  }
+
+  public MyThread[] getThreads() {
+    return this.threadContainers;
   }
 
 

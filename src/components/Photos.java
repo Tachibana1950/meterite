@@ -1,19 +1,16 @@
 package components;
 
+import utils.PlaySounds;
+
 import java.io.InputStream;
 import javax.imageio.ImageIO;
-import javax.sound.sampled.AudioSystem;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import utils.PlaySounds;
-
 import java.awt.Rectangle;
-
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -21,7 +18,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-public class Photos extends JPanel implements MouseListener {
+interface PhotosProps {
+  public double getDx();
+  public double getDy();
+  public void setDx(double _dx);
+  public void setDy(double _dy);
+  public int getImageSize(String _case);
+  public boolean getStatus();
+
+}
+public class Photos extends JPanel implements MouseListener, PhotosProps {
 
   // Image
   private Image show;
@@ -34,8 +40,8 @@ public class Photos extends JPanel implements MouseListener {
   private boolean isBomb = false;
 
   // Collision
-  private double dx = 1;
-  private double dy = 1;
+  private double dx = 1.1;
+  private double dy = 1.1;
 
   public Photos() {
     this.setOpaque(false);
@@ -128,13 +134,12 @@ public class Photos extends JPanel implements MouseListener {
     if (num >= 2) {
       new PlaySounds("pling.wav", -15f);
 
-      isBomb = true;
-
       Timer timer = new Timer(500, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
           new PlaySounds("bomb.wav");
-
+          
+          isBomb = true;
           setVisible(false);
         }
       });

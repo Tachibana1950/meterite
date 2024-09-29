@@ -1,6 +1,8 @@
 package components;
 
 import java.awt.Frame;
+import java.awt.Rectangle;
+
 import pages.GamePanel;
 import utils.useRandom;
 
@@ -12,10 +14,10 @@ public class MyThread extends Thread {
   private GamePanel gamePanel;
 
   // Speed
-  private int getCurrentSpeed = 1;
+  private double getCurrentSpeed = 1.1;
 
   // Control Path
-  double dx = 1, dy = 1;
+  double dx = 1.1, dy = 1.1;
 
   public MyThread(Frame getFrame, Photos getPt, GamePanel getGamePanel, int speed) {
     this.pt = getPt;
@@ -36,8 +38,10 @@ public class MyThread extends Thread {
 
     if (flag > 0.5) {
       this.dx = this.getCurrentSpeed;
+
     } else {
       this.dy = this.getCurrentSpeed;
+
     }
   }
 
@@ -54,65 +58,83 @@ public class MyThread extends Thread {
       currentSpeed = 5;
     }
 
-    return currentSpeed;
+    return currentSpeed + .25;
   }
 
   private void checkExceptTarget() {
     for (Photos target : this.gamePanel.getPhotos()) {
-      if (target != null && target != this.pt) {
-        if (this.pt.getBounds().intersects(target.getBounds())) {
-          // คำณวนแนวอุกาบาตที่ทับกัน
-          int overAnX = ((this.pt.getBounds().width + target.getBounds().width) / 2)
-              - Math.abs(this.pt.getX() - target.getX());
-          int overAnY = ((this.pt.getBounds().height + target.getBounds().height) / 2)
-              - Math.abs(this.pt.getY() - target.getY());
 
-          // Horizontal
-          if (overAnX < overAnY) {
-            if (this.pt.getX() > target.getX()) {
-              // Move right
-              this.pt.setLocation(this.pt.getX() + overAnX, this.pt.getY());
-              target.setLocation(target.getX() - overAnX, target.getY());
-              this.dx = Math.abs(this.dx);
+      if (target != null) {
+        if (target.getStatus()) {
+          return;
 
-            } else {
-              // Move left
-              this.pt.setLocation(this.pt.getX() - overAnX, this.pt.getY());
-              target.setLocation(target.getX() + overAnX, target.getY());
-              this.dx = -Math.abs(this.dx);
-
-            }
-
-          }
-          // Vertical
-          else {
-            if (this.pt.getY() > target.getY()) {
-              // !Move down
-              this.pt.setLocation(this.pt.getX(), this.pt.getY() + overAnY);
-              target.setLocation(target.getX(), target.getY() - overAnY);
-              this.dy = Math.abs(this.dy);
-
-            } else {
-              // !Move up
-              this.pt.setLocation(this.pt.getX(), this.pt.getY() - overAnY);
-              target.setLocation(target.getX(), target.getY() + overAnY);
-              this.dy = -Math.abs(this.dy);
-
-            }
-          }
-
-          // Update speed
-          double angle = Math.atan2(this.pt.getY() - target.getY(), this.pt.getX() - target.getX());
-          this.dx = Math.cos(angle) * initialRandomizeSpeed(getCurrentSpeed);
-          this.dy = Math.sin(angle) * initialRandomizeSpeed(getCurrentSpeed);
-
-          System.out.println(String.format("Update Speed:\n=> %f\n=> %f\n------------------------------\n", this.dx, this.dy));
-
-          this.dx += (Math.random() * 3) - 0.5;
-          this.dy += (Math.random() * 3) - 0.5;
-
-          break;
         }
+
+        if (target != this.pt) {
+          Rectangle ref = this.pt.getBounds();
+          Rectangle targetRef = target.getBounds();
+
+          // Object Radiant
+          // ref.grow(5, 5);
+          targetRef.grow(5, 5);
+
+          if (ref.intersects(targetRef)) {
+            // คำณวนแนวอุกาบาตที่ทับกัน
+            int overAnX = ((ref.width + targetRef.width) / 2)
+                - Math.abs(this.pt.getX() - target.getX());
+
+            int overAnY = ((ref.height + targetRef.height) / 2)
+                - Math.abs(this.pt.getY() - target.getY());
+
+            // Horizontal
+            if (overAnX < overAnY) {
+              if (this.pt.getX() > target.getX()) {
+                // Move right
+                this.pt.setLocation(this.pt.getX() + overAnX, this.pt.getY());
+                target.setLocation(target.getX() - overAnX, target.getY());
+                this.dx = Math.abs(this.dx);
+
+              } else {
+                // Move left
+                this.pt.setLocation(this.pt.getX() - overAnX, this.pt.getY());
+                target.setLocation(target.getX() + overAnX, target.getY());
+                this.dx = -Math.abs(this.dx);
+
+              }
+
+            }
+            // Vertical
+            else {
+              if (this.pt.getY() > target.getY()) {
+                // !Move down
+                this.pt.setLocation(this.pt.getX(), this.pt.getY() + overAnY);
+                target.setLocation(target.getX(), target.getY() - overAnY);
+                this.dy = Math.abs(this.dy);
+
+              } else {
+                // !Move up
+                this.pt.setLocation(this.pt.getX(), this.pt.getY() - overAnY);
+                target.setLocation(target.getX(), target.getY() + overAnY);
+                this.dy = -Math.abs(this.dy);
+
+              }
+            }
+
+            // Update speed
+            double angle = Math.atan2(this.pt.getY() - target.getY(), this.pt.getX() - target.getX());
+            this.dx = (Math.cos(angle) * initialRandomizeSpeed(getCurrentSpeed));
+            this.dy = (Math.sin(angle) * initialRandomizeSpeed(getCurrentSpeed));
+
+            // this.dx += (Math.random() * 3);
+            // this.dy += (Math.random() * 3);
+
+            System.out.println(
+                String.format("Update Speed:\n= dx > %f\n= dy> %f\n------------------------------\n", this.dx,
+                    this.dy));
+            break;
+          }
+        }
+
       }
     }
   }
@@ -130,7 +152,7 @@ public class MyThread extends Thread {
     int borderX = this.frame.getWidth() - imageWidth;
     int borderY = this.frame.getHeight() - imageHeight;
 
-    while (true) {
+    while (!this.pt.getStatus()) {
       try {
         x += dx;
         y += dy;
@@ -143,10 +165,11 @@ public class MyThread extends Thread {
         if (x < 0) {
           dx = Math.abs(dx);
           x = 0; // Left
+          // checkExceptTarget();
 
         }
 
-        if (x + 75 > borderX + 75) {
+        if (x > borderX) {
           dx = -Math.abs(dx);
           x = borderX; // Right
 
@@ -156,6 +179,7 @@ public class MyThread extends Thread {
         if (y < 0) {
           dy = Math.abs(dy);
           y = 0; // Top
+          // checkExceptTarget();
 
         }
 

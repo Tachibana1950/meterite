@@ -12,8 +12,8 @@ public class Frame extends JFrame {
   // private float getSpeed = 0f;
 
   // Screen
-  private int width = 500;
-  private int height = 500;
+  private int width = 800;
+  private int height = 800;
 
   // Thread
   MyThread threads;
