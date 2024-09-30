@@ -45,15 +45,13 @@ public class App {
                 System.out.println("Please input number only!");
 
             }
-
-            SwingUtilities.invokeLater(() -> inputField.requestFocusInWindow());
         }
 
         Frame frame = new Frame(num, 1);
         frame.setVisible(true);
 
         PlaySounds getSound = new PlaySounds();
-        getSound.play("background.wav", -40.0f);
+        getSound.play("background.wav", -20.0f);
 
         int soundLength = getSound.soundLength("background.wav");
         Timer timer = new Timer(soundLength, new ActionListener() {

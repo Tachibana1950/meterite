@@ -200,27 +200,39 @@ public class MyThread extends Thread {
   }
 
   private void horizonTrigger(Photos target, int overAnX) {
+    System.out.println("===== Horizon Trigger =====");
+
     if (this.pt.getX() > target.getX()) {
       this.x += overAnX;
       target.setLocation(target.getX() - overAnX, target.getY());
       this.dx = (Math.abs(this.dx) + this.PROGRESSIVE_SPEED);
+      System.out.println(String.format("Y: %d\nOverAnX: %d\nDy: %f", this.y, overAnX, this.dy));
     } else {
       this.x -= overAnX;
       target.setLocation(target.getX() + overAnX, target.getY());
       this.dx = -(Math.abs(this.dx) + this.PROGRESSIVE_SPEED);
+      System.out.println(String.format("Y: %d\nOverAnX: %d\nDy: %f", this.y, overAnX, this.dy));
     }
+
+    System.out.println("===== End Horizon Trigger =====");
   }
 
   private void verticalTrigger(Photos target, int overAnY) {
+    System.out.println("===== Vertical Trigger =====");
+
     if (this.pt.getY() > target.getY()) {
       this.y += overAnY;
       target.setLocation(target.getX(), target.getY() - overAnY);
       this.dy = (Math.abs(this.dy) + this.PROGRESSIVE_SPEED);
+      System.out.println(String.format("Y: %d\nOverAnY: %d\nDy: %f", this.y, overAnY, this.dy));
     } else {
       this.y -= overAnY;
       target.setLocation(target.getX(), target.getY() + overAnY);
       this.dy = -(Math.abs(this.dy) + this.PROGRESSIVE_SPEED);
+      System.out.println(String.format("Y: %d\nOverAnY: %d\nDy: %f", this.y, overAnY, this.dy));
     }
+
+    System.out.println("===== End Vertical Trigger =====");
   }
 
   private void updateSpeed(Photos target) {
