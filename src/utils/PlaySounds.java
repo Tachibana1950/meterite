@@ -1,6 +1,7 @@
 package utils;
 
 import java.io.InputStream;
+import java.io.BufferedInputStream;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -17,23 +18,29 @@ public class PlaySounds implements PlaySoundProps {
     public PlaySounds() {
     }
 
-    public PlaySounds(String path) {
-        playSound(path, -25.0f); // Default volume
+    public PlaySounds(String _path) {
+        playSound(_path, -25.0f);
     }
 
-    public PlaySounds(String path, float volume) {
-        playSound(path, volume);
+    public PlaySounds(String _path, float volume) {
+        playSound(_path, volume);
     }
 
-    private void playSound(String path, float volume) {
-        new Thread(() -> {
-            try (InputStream audioSrc = getClass().getClassLoader().getResourceAsStream("resource/audio/" + path)) {
+    public void play(String _path, float volume) {
+        playSound(_path, volume);
+
+    }
+
+    private void playSound(String _path, float volume) {
+        Thread thread = new Thread(() -> {
+            try (InputStream audioSrc = getClass().getClassLoader().getResourceAsStream("resource/audio/" + _path)) {
                 if (audioSrc == null) {
                     System.out.println("Audio file not found!");
                     return;
                 }
 
-                AudioInputStream inputStream = AudioSystem.getAudioInputStream(audioSrc);
+                InputStream bufferedIn = new BufferedInputStream(audioSrc);
+                AudioInputStream inputStream = AudioSystem.getAudioInputStream(bufferedIn);
                 AudioFormat format = inputStream.getFormat();
                 DataLine.Info info = new DataLine.Info(Clip.class, format);
 
@@ -45,10 +52,18 @@ public class PlaySounds implements PlaySoundProps {
 
                 clip.start();
 
+                // For build java project
+                if (clip.isActive()) {
+                    clip.close();
+
+                };
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }).start();
+        });
+
+        thread.start();
     }
 
     public int soundLength(String path) {
@@ -63,8 +78,7 @@ public class PlaySounds implements PlaySoundProps {
             long frames = inputStream.getFrameLength();
             float frameRate = format.getFrameRate();
 
-            // Calculate duration in seconds
-            return (int) Math.floor(frames / frameRate);
+            return (int) ((Math.floor(frames / frameRate)) * 1000);
         } catch (Exception e) {
             e.printStackTrace();
         }
