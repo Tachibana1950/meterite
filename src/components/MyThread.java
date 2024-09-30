@@ -1,22 +1,27 @@
 package components;
 
 import java.awt.Frame;
+import java.awt.Rectangle;
+import java.util.Iterator;
+import java.util.List;
 
 import pages.GamePanel;
 import utils.useRandom;
 
 public class MyThread extends Thread {
-
-  // Attributes
   private Photos pt;
   private Frame frame;
   private GamePanel gamePanel;
 
   // Speed
-  private int getCurrentSpeed = 1;
+  private double MIN_SPEED = 1.1;
+  private double PROGRESSIVE_SPEED = 0.25;
 
-  // Control Path
-  int dx = 1, dy = 1;
+  private double getCurrentSpeed = MIN_SPEED;
+  private double dx = MIN_SPEED, dy = MIN_SPEED;
+
+  // Position at
+  private int x, y;
 
   public MyThread(Frame getFrame, Photos getPt, GamePanel getGamePanel, int speed) {
     this.pt = getPt;
@@ -25,13 +30,6 @@ public class MyThread extends Thread {
     this.getCurrentSpeed = speed;
 
     this.randomDefaultSpeed();
-
-  }
-
-  // Speed Management
-  private int randomSpeedTrigger() {
-    return new useRandom().randomSpeed();
-
   }
 
   private void randomDefaultSpeed() {
@@ -39,98 +37,45 @@ public class MyThread extends Thread {
 
     if (flag > 0.5) {
       this.dx = this.getCurrentSpeed;
-
     } else {
       this.dy = this.getCurrentSpeed;
-
     }
-
   }
 
-  private int initialRandomizeSpeed(int currentSpeed) {
-    // System.out.println("Current Speed: " + currentSpeed);
+  private double initialRandomizeSpeed(double currentSpeed) {
+    currentSpeed += new useRandom().randomSpeed();
 
-    currentSpeed += randomSpeedTrigger();
-
-    // Min speed 1
     if (Math.abs(currentSpeed) < 1) {
       currentSpeed = 1;
     }
-
-    // Limit speed 5
     if (Math.abs(currentSpeed) > 5) {
-      currentSpeed = 5;
+      currentSpeed = 4.5;
     }
 
-    return currentSpeed;
-  }
+    // System.out.println("Current Speed: " + currentSpeed);
 
-  private void checkExpecpt() {
-    for (int i = 0; i < this.gamePanel.getphoto().length; i++) {
-      Photos targer = this.gamePanel.getphoto()[i];
-      if (targer != null && targer != this.pt) {
-        if (targer.getBounds().intersects(this.pt.getBounds())) {
-          this.dx = -dx;
-          this.dy = -dy;
-
-          targer.setDx(-targer.getDx());
-          targer.setDy(-targer.getDy());
-
-          try {
-            Thread.sleep(200);
-
-          } catch (Exception e) {
-            e.printStackTrace();
-
-          }
-        }
-      }
-    }
+    return currentSpeed + this.PROGRESSIVE_SPEED;
   }
 
   @Override
   public void run() {
     super.run();
 
-    int x = this.pt.getX();
-    int y = this.pt.getY();
+    this.x = this.pt.getX();
+    this.y = this.pt.getY();
 
-    int borderX = this.frame.getWidth() - this.pt.getImageSize("width");
-    int borderY = this.frame.getHeight() - this.pt.getImageSize("height");
-
-    while (true) {
+    while (!this.pt.getIsBomb()) {
       try {
-        x += dx;
-        y += dy;
+        movePhoto();
+        checkOutOfFrame();
+        checkCollisions();
 
-        // Border Collision Check
-        if (x + (this.pt.getImageSize("width") / 2) - 7 > borderX || x < 0) {
-          dx = initialRandomizeSpeed(dx);
-          dx = -dx;
+        this.pt.setBounds(
+            this.x,
+            this.y,
+            this.pt.getWidth(),
+            this.pt.getHeight());
 
-          if (x < 0) {
-            x = 0;
-          } else if (x + (this.pt.getImageSize("width") / 2) - 7 > borderX) {
-            x = borderX - (this.pt.getImageSize("width") / 2) - 7;
-          }
-        }
-
-        if (y + this.pt.getImageSize("height") > borderY || y < 0) {
-          dy = initialRandomizeSpeed(dy);
-          dy = -dy;
-
-          if (y < 0) {
-            y = 0;
-          } else if (y + this.pt.getImageSize("height") > borderY) {
-            y = borderY - this.pt.getImageSize("height");
-          }
-        }
-
-        // Check for collisions with other photos
-        checkExpecpt();
-
-        // Update position
-        this.pt.setBounds(x, y, this.pt.getWidth(), this.pt.getHeight());
         this.pt.repaint();
 
         Thread.sleep(10);
@@ -138,6 +83,165 @@ public class MyThread extends Thread {
         e.printStackTrace();
       }
     }
+
+    this.interrupt();
   }
 
+  private void movePhoto() {
+    x += dx + this.PROGRESSIVE_SPEED;
+    y += dy + this.PROGRESSIVE_SPEED;
+  }
+
+  private void checkOutOfFrame() {
+    int imageWidth = this.pt.getImageSize("width");
+    int imageHeight = this.pt.getImageSize("height");
+
+    int borderX = this.frame.getWidth() - imageWidth;
+    int borderY = this.frame.getHeight() - imageHeight;
+
+    boolean outOfBorderX = false;
+    boolean outOfBorderY = false;
+
+    if (x < 0) {
+      dx = Math.abs(dx);
+      x = 0;
+      outOfBorderX = true;
+    } else if (x > borderX) {
+      dx = -Math.abs(dx);
+      x = borderX;
+      outOfBorderX = true;
+    }
+
+    if (y < 0) {
+      dy = Math.abs(dy);
+      y = 0;
+      outOfBorderY = true;
+    } else if (y > borderY) {
+      dy = -Math.abs(dy);
+      y = borderY;
+      outOfBorderY = true;
+    }
+
+    if (outOfBorderX || outOfBorderY) {
+      this.dx = zeroCorrection(initialRandomizeSpeed(this.dx));
+      this.dy = zeroCorrection(initialRandomizeSpeed(this.dy));
+
+      // if (outOfBorderX) {
+      // this.dx = zeroCorrection(initialRandomizeSpeed(this.dx));
+
+      // } else {
+      // this.dy = zeroCorrection(initialRandomizeSpeed(this.dy));
+
+      // }
+
+      // movement
+      if (outOfBorderX && outOfBorderY) {
+        double useSpeed = zeroCorrection(Math.random() > 0.5 ? this.getCurrentSpeed : -this.getCurrentSpeed);
+        this.dx = useSpeed;
+        this.dy = useSpeed;
+      }
+    }
+  }
+
+  private double zeroCorrection(double speed) {
+    if (Math.abs(speed) < 1) {
+      speed = (speed < 0) ? -1.5 : 1.5;
+    }
+
+    return speed;
+  }
+
+  private void checkCollisions() {
+    List<Photos> photosContainerRef = this.gamePanel.getPhotos();
+    Iterator<Photos> iteratorContainerOfPhotos = photosContainerRef.iterator();
+
+    while (iteratorContainerOfPhotos.hasNext()) {
+      Photos target = iteratorContainerOfPhotos.next();
+
+      if (target == null || target == this.pt) {
+        return;
+
+      }
+
+      if (!target.getIsBomb()) {
+        Rectangle ref = this.pt.getBounds();
+        Rectangle targetRef = target.getBounds();
+
+        targetRef.grow(5, 5);
+
+        if (ref.intersects(targetRef)) {
+          handleCollision(target);
+
+          break;
+        }
+      }
+    }
+  }
+
+  private void handleCollision(Photos target) {
+    Rectangle ref = this.pt.getBounds();
+    Rectangle targetRef = target.getBounds();
+
+    int refX = (ref.width + targetRef.width);
+    int refY = (ref.height + targetRef.height);
+
+    int overAnX = (refX / 2) - Math.abs(this.pt.getX() - target.getX());
+    int overAnY = (refY / 2) - Math.abs(this.pt.getY() - target.getY());
+
+    System.out.println(String.format("ref X: %d\nref Y: %d\nOver X: %d\nOver Y: %d\n**********", refX, refY, overAnX, overAnY));
+
+    if (overAnX < overAnY) {
+      horizonTrigger(target, overAnX);
+    } else {
+      verticalTrigger(target, overAnY);
+    }
+
+    updateSpeed(target);
+  }
+
+  private void horizonTrigger(Photos target, int overAnX) {
+    System.out.println("===== Horizon Trigger =====");
+
+    if (this.pt.getX() > target.getX()) {
+      this.x += overAnX;
+      target.setLocation(target.getX() - overAnX, target.getY());
+      this.dx = (Math.abs(this.dx) + this.PROGRESSIVE_SPEED);
+      System.out.println(String.format("Y: %d\nOverAnX: %d\nDy: %f", this.y, overAnX, this.dy));
+    } else {
+      this.x -= overAnX;
+      target.setLocation(target.getX() + overAnX, target.getY());
+      this.dx = -(Math.abs(this.dx) + this.PROGRESSIVE_SPEED);
+      System.out.println(String.format("Y: %d\nOverAnX: %d\nDy: %f", this.y, overAnX, this.dy));
+    }
+
+    System.out.println("===== End Horizon Trigger =====");
+  }
+
+  private void verticalTrigger(Photos target, int overAnY) {
+    System.out.println("===== Vertical Trigger =====");
+
+    if (this.pt.getY() > target.getY()) {
+      this.y += overAnY;
+      target.setLocation(target.getX(), target.getY() - overAnY);
+      this.dy = (Math.abs(this.dy) + this.PROGRESSIVE_SPEED);
+      System.out.println(String.format("Y: %d\nOverAnY: %d\nDy: %f", this.y, overAnY, this.dy));
+    } else {
+      this.y -= overAnY;
+      target.setLocation(target.getX(), target.getY() + overAnY);
+      this.dy = -(Math.abs(this.dy) + this.PROGRESSIVE_SPEED);
+      System.out.println(String.format("Y: %d\nOverAnY: %d\nDy: %f", this.y, overAnY, this.dy));
+    }
+
+    System.out.println("===== End Vertical Trigger =====");
+  }
+
+  private void updateSpeed(Photos target) {
+    double angle = Math.atan2(this.pt.getY() - target.getY(), this.pt.getX() - target.getX());
+    this.dx = zeroCorrection((Math.cos(angle) * initialRandomizeSpeed(getCurrentSpeed)));
+    this.dy = zeroCorrection((Math.sin(angle) * initialRandomizeSpeed(getCurrentSpeed)));
+
+    System.out.println(
+        String.format("----- Update Speed -----\n= dx > %f\n= dy > %f\n------------------------------\n", this.dx,
+            this.dy));
+  }
 }
