@@ -31,7 +31,7 @@ interface PhotosProps {
 
   public int getImageSize(String _case);
 
-  public boolean getStatus();
+  public boolean getIsBomb();
 
 }
 
@@ -174,7 +174,7 @@ public class Photos extends JPanel implements MouseListener, PhotosProps {
   public void mouseReleased(MouseEvent e) {
   }
 
-  public boolean getStatus() {
+  public boolean getIsBomb() {
     return this.isBomb;
 
   }

@@ -64,7 +64,7 @@ public class MyThread extends Thread {
     this.x = this.pt.getX();
     this.y = this.pt.getY();
 
-    while (!this.pt.getStatus()) {
+    while (!this.pt.getIsBomb()) {
       try {
         movePhoto();
         checkOutOfFrame();
@@ -126,6 +126,14 @@ public class MyThread extends Thread {
       this.dx = zeroCorrection(initialRandomizeSpeed(this.dx));
       this.dy = zeroCorrection(initialRandomizeSpeed(this.dy));
 
+      // if (outOfBorderX) {
+      // this.dx = zeroCorrection(initialRandomizeSpeed(this.dx));
+
+      // } else {
+      // this.dy = zeroCorrection(initialRandomizeSpeed(this.dy));
+
+      // }
+
       // movement
       if (outOfBorderX && outOfBorderY) {
         double useSpeed = zeroCorrection(Math.random() > 0.5 ? this.getCurrentSpeed : -this.getCurrentSpeed);
@@ -144,13 +152,18 @@ public class MyThread extends Thread {
   }
 
   private void checkCollisions() {
-    List<Photos> photos = this.gamePanel.getPhotos();
-    Iterator<Photos> iterator = photos.iterator();
+    List<Photos> photosContainerRef = this.gamePanel.getPhotos();
+    Iterator<Photos> iteratorContainerOfPhotos = photosContainerRef.iterator();
 
-    while (iterator.hasNext()) {
-      Photos target = iterator.next();
+    while (iteratorContainerOfPhotos.hasNext()) {
+      Photos target = iteratorContainerOfPhotos.next();
 
-      if (target != null && !target.getStatus() && target != this.pt) {
+      if (target == null || target == this.pt) {
+        return;
+
+      }
+
+      if (!target.getIsBomb()) {
         Rectangle ref = this.pt.getBounds();
         Rectangle targetRef = target.getBounds();
 
@@ -158,6 +171,7 @@ public class MyThread extends Thread {
 
         if (ref.intersects(targetRef)) {
           handleCollision(target);
+
           break;
         }
       }
@@ -168,10 +182,13 @@ public class MyThread extends Thread {
     Rectangle ref = this.pt.getBounds();
     Rectangle targetRef = target.getBounds();
 
-    int overAnX = ((ref.width + targetRef.width) / 2) - Math.abs(this.pt.getX() - target.getX());
-    int overAnY = ((ref.height + targetRef.height) / 2) - Math.abs(this.pt.getY() - target.getY());
+    int refX = (ref.width + targetRef.width);
+    int refY = (ref.height + targetRef.height);
 
-    System.out.println(String.format("Over X: %d\nOver Y: %d", overAnX, overAnY));
+    int overAnX = (refX / 2) - Math.abs(this.pt.getX() - target.getX());
+    int overAnY = (refY / 2) - Math.abs(this.pt.getY() - target.getY());
+
+    System.out.println(String.format("ref X: %d\nref Y: %d\nOver X: %d\nOver Y: %d\n**********", refX, refY, overAnX, overAnY));
 
     if (overAnX < overAnY) {
       horizonTrigger(target, overAnX);
